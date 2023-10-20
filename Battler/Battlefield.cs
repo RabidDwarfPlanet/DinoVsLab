@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Battler
 {
@@ -25,6 +26,8 @@ namespace Battler
         string winnerChar = null;
         string loser = null;
         string currentPlayerChar = null;
+        string currentPlayerName = null;
+        string opponentName = null;
         Combatant currentPlayer = null;
         string playerOneChar = null;
         string playerTwoChar = null;
@@ -95,7 +98,7 @@ namespace Battler
                             {
                                 name.displayName();
                             }
-                            break;
+                            goto retry;
                         //case "add":
                         //    this.addNewWeapon();
                         //    break;
@@ -133,7 +136,7 @@ namespace Battler
                             {
                                 name.displayName();
                             }
-                            break;
+                            goto retry;
                         //case "add":
                         //    this.addNewWeapon();
                         //    break;
@@ -177,15 +180,17 @@ namespace Battler
                 {
                     case "dinosaur":
                     case "dino":
-                        Combatant DinosaurP1 = new Combatant("Dinosaur", 100);
+                        Combatant DinosaurP1 = new Combatant("Dinosaur", 50);
                         playerOne = DinosaurP1;
                         currentPlayerChar = "dino";
+                        playerOneChar = "dino";
                         Console.WriteLine("\nPlayer 1 has chosen a Dinosaur");
                         break;
                     case "robot":
                         Console.WriteLine("\nPlayer 1 has chosen a Robot");
-                        Combatant RobotP1 = new Combatant("Robot", 100);
+                        Combatant RobotP1 = new Combatant("Robot", 50);
                         playerOne = RobotP1;
+                        playerOneChar = "robot";
                         currentPlayerChar = "robot";
                         break;
                     case "characters":
@@ -215,16 +220,18 @@ namespace Battler
                 {
                     case "dinosaur":
                     case "dino":
-                        Combatant DinosaurP2 = new Combatant("Dinosaur", 100);
+                        Combatant DinosaurP2 = new Combatant("Dinosaur", 50);
                         playerTwo = DinosaurP2;
-                        string currentPlayer = "dino";
+                        currentPlayerChar = "dino";
+                        playerTwoChar = "dino";
                         Console.WriteLine("\nPlayer 2 has chosen a Dinosaur");
                         break;
                     case "robot":
                         Console.WriteLine("\nPlayer 2 has chosen a Robot");
-                        Combatant RobotP2 = new Combatant("Robot", 100);
+                        Combatant RobotP2 = new Combatant("Robot", 50);
                         playerTwo = RobotP2;
-                        currentPlayer = "robot";
+                        currentPlayerChar = "robot";
+                        playerTwoChar = "robot";
                         break;
                     case "characters":
                         Console.WriteLine("");
@@ -249,68 +256,86 @@ namespace Battler
             playerTwoName = Console.ReadLine();
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            
             while (playerOne.health > 0 && playerTwo.health > 0)
             {
+                Console.Clear();
+                currentPlayer = playerOne;
+                currentPlayerName = playerOneName;
+                opponentName = playerTwoName;
+                Console.WriteLine("Player 1's turn");
+                this.pickAttack();
+
                 //player 1 attacks player 2
-                int damage = rand.Next(playerOne.weapon.attackPower);
+                int damage = rand.Next(currentPlayer.activeWeapon.attackPower);
                 playerTwo.takeDamage(damage);
-                if(playerOne == Robot)
-                {
-                    Console.WriteLine($"\n{playerOneName} shoots {playerTwoName} with a {playerOne.weapon.type} for {damage}");
-                }
-                else if (playerOne == Dinosaur)
-                {
-                    Console.WriteLine($"\n{playerOneName} claws {playerTwoName} for {damage}");
-                }
+
+                this.consoleWriteAttack(damage);
 
                 if (playerTwo.health > 0)
                 {
-                    Console.WriteLine($"{playerTwoName} has {playerTwo.health} remaining");
+                    Console.WriteLine($"{playerTwoName} has {playerTwo.health} health remaining");
+                    Console.WriteLine("Press any key to continue");
+                    Console.ReadKey();
                 }
                 else
                 {
                     Console.WriteLine($"{playerTwoName} has died");
+                    Console.WriteLine("Press any key to continue");
                     Console.ReadKey();
                 }
                 
+
+
+
                 //player 2 attacks player 1
+
+
                 if (playerTwo.health > 0)
                 {
-                    damage = rand.Next(playerTwo.weapon.attackPower);
+                    Console.Clear();
+                    currentPlayer = playerTwo;
+                    currentPlayerName = playerTwoName;
+                    opponentName = playerOneName;
+                    Console.WriteLine("Player 2's turn");
+                    this.pickAttack();
+
+
+                    damage = rand.Next(currentPlayer.activeWeapon.attackPower);
                     playerOne.takeDamage(damage);
-                    if (playerTwo == Robot)
-                    {
-                        Console.WriteLine($"\n{playerTwoName} shoots {playerOneName} with a {playerOne.weapon.type} for");
-                        
-                    }
-                    else if (playerTwo == Dinosaur)
-                    {
-                        Console.WriteLine($"\n{playerTwoName} claws {playerOneName} for {damage}");
-                    }
+                    this.consoleWriteAttack(damage);
+
+
 
                     if (playerOne.health > 0)
                     {
-                        Console.WriteLine($"{playerOneName} has {playerOne.health} remaining");
+                        Console.WriteLine($"{currentPlayerName} has {playerOne.health} health remaining");
+                        Console.WriteLine("Press any key to continue");
+                        Console.ReadKey();
                     }
                     else
                     {
                         Console.WriteLine($"{playerOneName} has died");
+                        Console.WriteLine("Press any key to continue");
                         Console.ReadKey();
+
                     }
 
+                    
 
                 }
+                
 
                 if(playerOne.health <= 0)
                 {
                     winner = playerTwoName;
                     loser = playerOneName;
 
-                    if(playerOneChar == "robot")
+                    if(playerTwoChar == "robot")
                     {
                         winnerChar = "robot";
                     }
-                    else if(playerOneChar == "dino")
+                    else if(playerTwoChar == "dino")
                     {
                         winnerChar = "dino";
                     }
@@ -320,11 +345,11 @@ namespace Battler
                     winner = playerOneName;
                     loser = playerTwoName;
 
-                    if (playerTwoChar == "robot")
+                    if (playerOneChar == "robot")
                     {
                         winnerChar = "robot";
                     }
-                    else if (playerTwoChar == "dino")
+                    else if (playerOneChar == "dino")
                     {
                         winnerChar = "dino";
                     }
@@ -336,11 +361,52 @@ namespace Battler
         }
 
 
-        public void pickAttack(string attack)
+        public void attacks()
         {
 
         }
 
+        public void pickAttack()
+        {
+            Console.WriteLine($"What would you like to attack with (Please enter the attack number)");
+            for (int i = 0; i < 3; i++)
+            {
+                Console.WriteLine($"Attack {i + 1}: {currentPlayer.weapon[i].type}");
+            }
+
+            int chosenAttack = int.Parse(Console.ReadLine());
+            chosenAttack -= 1;
+            currentPlayer.activeWeapon = currentPlayer.weapon[chosenAttack];
+
+
+        }
+
+        public void consoleWriteAttack(int damage)
+        {
+            switch (currentPlayer.activeWeapon.type)
+            {
+                case "Tail":
+                case "Sword":
+                case "Fists":
+                    Console.WriteLine($"{currentPlayerName} hit {opponentName} with their {currentPlayer.activeWeapon.type} {damage} damage");
+                    break;
+                case "Fire breath":
+                    Console.WriteLine($"{currentPlayerName} breathes fire at {opponentName} for {damage} damage");
+                    break;
+                case "Bite":
+                    Console.WriteLine($"{currentPlayerName} bites {opponentName} for {damage} damage");
+                    break;
+                case "Claws":
+                    Console.WriteLine($"{currentPlayerName} claws {opponentName} for {damage} damage");
+                    break;
+                case "Laser":
+                case "Railgun":
+                    Console.WriteLine($"{currentPlayerName} shoots {opponentName} with a {currentPlayer.activeWeapon.type} for {damage} damage" );
+                    break;
+
+            }
+        }
+        
         public void victoryMessage()
         {
             bool loop = true;
@@ -370,7 +436,7 @@ namespace Battler
                     Thread.Sleep(milliseconds);
                     Console.Clear();
                     Console.WriteLine($"{winner} has defeated {loser} and is therefor victorious");
-                    Console.WriteLine("            __\r\n           /oo\\\r\n          |    |\r\n      ^^  (vvvv)   ^^\r\n      \\\\  /\\__/\\  //\r\n       \\\\/      \\//\r\n        /        \\        \r\n  ^    |          |  \r\n | \\___/          \\ \r\n|     (            )\r\n \\     \\----------/\r\n   \\_____//    \\\\\r\n        W       W");
+                    Console.WriteLine("            __\r\n           /oo\\\r\n          |    |\r\n      ^^  (vvvv)  ^^\r\n      \\\\  /\\__/\\  //\r\n       \\\\/      \\//\r\n        /        \\        \r\n  ^    |          |  \r\n | \\___/          \\ \r\n|     (            )\r\n \\     \\----------/\r\n   \\_____//    \\\\\r\n        W       W");
                     Console.WriteLine("Please close console");
                     Thread.Sleep(milliseconds);
                 }

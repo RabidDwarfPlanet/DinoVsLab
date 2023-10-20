@@ -6,7 +6,7 @@
         {
             Battlefield battle = new Battlefield();
 
-            battle.victoryMessage();
+            battle.runGame();
         }
     }
 }

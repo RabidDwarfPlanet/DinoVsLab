@@ -11,6 +11,7 @@ namespace Battler
         public string name;
         public int health;
         public Weapon[] weapon = new Weapon[3];
+        public Weapon activeWeapon;
         
 
         public Combatant(string name, int health)
