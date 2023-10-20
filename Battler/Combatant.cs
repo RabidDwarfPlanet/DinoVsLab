@@ -8,15 +8,16 @@ namespace Battler
 {
     internal class Combatant
     {
+        public string type;
         public string name;
         public int health;
         public Weapon[] weapon = new Weapon[3];
         public Weapon activeWeapon;
         
 
-        public Combatant(string name, int health)
+        public Combatant(string type, int health)
         {
-            this.name = name;
+            this.type = type;
             this.health = health;
         }
 

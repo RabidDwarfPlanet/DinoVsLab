@@ -21,6 +21,7 @@ namespace Battler
         Weapon Bite = new Weapon("Bite", 20);
         Weapon Railgun = new Weapon("Railgun", 25);
         Weapon Laser = new Weapon("Laser", 20);
+        Random rand = new Random();
         int milliseconds = 1500;
         string winner = null;
         string winnerChar = null;
@@ -29,11 +30,16 @@ namespace Battler
         string currentPlayerName = null;
         string opponentName = null;
         Combatant currentPlayer = null;
+        Combatant opponent = null;
         string playerOneChar = null;
         string playerTwoChar = null;
         List<Combatant> Fighters = new List<Combatant>();
         List<Weapon> robotWeapons = new List<Weapon>();
         List<Weapon> dinoWeapons = new List<Weapon>();
+        List<Combatant> playerOneTeam = new List<Combatant>();
+        List<Combatant> playerTwoTeam = new List<Combatant>();
+        bool groupBattle = false;
+
 
         public Battlefield()
         {
@@ -148,9 +154,10 @@ namespace Battler
             }
         }
 
+
         public void battleSetup()
         {
-            Random rand = new Random();
+            
 
             robotWeapons.Add(Railgun);
             robotWeapons.Add(Laser);
@@ -164,45 +171,76 @@ namespace Battler
             Fighters.Add(Robot);
 
 
+            this.battleType();
+            
+
             Console.WriteLine("Choose player 1's combatant (Type CHARACTERS for a list of avalible characters)");
             Combatant playerOne = null;
             string playerOneName = null;
             Combatant playerTwo = null;
             string playerTwoName = null;
 
+            
+
             while (playerOne == null)
             {
-                restart:
+            restart:
                 string playerCommand = Console.ReadLine();
 
-                
+
                 switch (playerCommand.ToLower())
                 {
                     case "dinosaur":
                     case "dino":
-                        Combatant DinosaurP1 = new Combatant("Dinosaur", 50);
-                        playerOne = DinosaurP1;
+                        if (groupBattle == false)
+                        {
+                            Combatant DinosaurP1 = new Combatant("Dinosaur", 50);
+                            playerOne = DinosaurP1;
+                        }
+                        else
+                        {
+                            Combatant DinosaurP1One = new Combatant("Dinosaur", 50);
+                            Combatant DinosaurP1Two = new Combatant("Dinosaur", 50);
+                            Combatant DinosaurP1Three = new Combatant("Dinosaur", 50);
+                            playerTwoTeam.Add(DinosaurP1One); playerTwoTeam.Add(DinosaurP1Two); playerTwoTeam.Add(DinosaurP1Three);
+
+                        }
                         currentPlayerChar = "dino";
                         playerOneChar = "dino";
                         Console.WriteLine("\nPlayer 1 has chosen a Dinosaur");
                         break;
                     case "robot":
+                        if (groupBattle == false)
+                        {
+                            Combatant RobotP1 = new Combatant("Robot", 50);
+                            playerOne = RobotP1;
+                        }
+                        else
+                        {
+                            Combatant RobotP1One = new Combatant("Dinosaur", 50);
+                            Combatant RobotP1Two = new Combatant("Dinosaur", 50);
+                            Combatant RobotP1Three = new Combatant("Dinosaur", 50);
+                            playerOneTeam.Add(RobotP1One); playerTwoTeam.Add(RobotP1Two); playerTwoTeam.Add(RobotP1Three);
+
+                        }
                         Console.WriteLine("\nPlayer 1 has chosen a Robot");
-                        Combatant RobotP1 = new Combatant("Robot", 50);
-                        playerOne = RobotP1;
-                        playerOneChar = "robot";
                         currentPlayerChar = "robot";
+                        playerTwoChar = "robot";
                         break;
                     case "characters":
                         Console.WriteLine("");
-                        foreach(Combatant name in Fighters)
+                        foreach (Combatant name in Fighters)
                         {
                             name.displayName();
                         }
-                        goto restart;
+
+                        break;
                     default:
                         Console.WriteLine("That is not a valid character, please pick again");
-                        goto restart;
+                        break;
+
+
+
                 }
                 currentPlayer = playerOne;
                 this.chooseWeapons();
@@ -220,16 +258,38 @@ namespace Battler
                 {
                     case "dinosaur":
                     case "dino":
-                        Combatant DinosaurP2 = new Combatant("Dinosaur", 50);
-                        playerTwo = DinosaurP2;
+                        if(groupBattle == false)
+                        {
+                            Combatant DinosaurP2 = new Combatant("Dinosaur", 50);
+                            playerTwo = DinosaurP2;
+                        }
+                        else
+                        {
+                            Combatant DinosaurP2One = new Combatant("Dinosaur", 50);
+                            Combatant DinosaurP2Two = new Combatant("Dinosaur", 50);
+                            Combatant DinosaurP2Three = new Combatant("Dinosaur", 50);
+                            playerTwoTeam.Add(DinosaurP2One); playerTwoTeam.Add(DinosaurP2Two); playerTwoTeam.Add(DinosaurP2Three);
+
+                        }
                         currentPlayerChar = "dino";
                         playerTwoChar = "dino";
                         Console.WriteLine("\nPlayer 2 has chosen a Dinosaur");
                         break;
                     case "robot":
+                        if (groupBattle == false)
+                        {
+                            Combatant RobotP2 = new Combatant("Robot", 50);
+                            playerTwo = RobotP2;
+                        }
+                        else
+                        {
+                            Combatant RobotP2One = new Combatant("Dinosaur", 50);
+                            Combatant RobotP2Two = new Combatant("Dinosaur", 50);
+                            Combatant RobotP2Three = new Combatant("Dinosaur", 50);
+                            playerTwoTeam.Add(RobotP2One); playerTwoTeam.Add(RobotP2Two); playerTwoTeam.Add(RobotP2Three);
+
+                        }
                         Console.WriteLine("\nPlayer 2 has chosen a Robot");
-                        Combatant RobotP2 = new Combatant("Robot", 50);
-                        playerTwo = RobotP2;
                         currentPlayerChar = "robot";
                         playerTwoChar = "robot";
                         break;
@@ -257,74 +317,33 @@ namespace Battler
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             
-            while (playerOne.health > 0 && playerTwo.health > 0)
-            {
-                Console.Clear();
                 currentPlayer = playerOne;
+                opponent = playerTwo;
                 currentPlayerName = playerOneName;
                 opponentName = playerTwoName;
+
+            while (playerOne.health > 0 && playerTwo.health > 0)
+            {
+                //player 1 attacks player 2
+                Console.Clear();
                 Console.WriteLine("Player 1's turn");
                 this.pickAttack();
-
-                //player 1 attacks player 2
-                int damage = rand.Next(currentPlayer.activeWeapon.attackPower);
-                playerTwo.takeDamage(damage);
-
-                this.consoleWriteAttack(damage);
-
-                if (playerTwo.health > 0)
-                {
-                    Console.WriteLine($"{playerTwoName} has {playerTwo.health} health remaining");
-                    Console.WriteLine("Press any key to continue");
-                    Console.ReadKey();
-                }
-                else
-                {
-                    Console.WriteLine($"{playerTwoName} has died");
-                    Console.WriteLine("Press any key to continue");
-                    Console.ReadKey();
-                }
-                
-
+                this.attacks();
 
 
                 //player 2 attacks player 1
-
-
                 if (playerTwo.health > 0)
                 {
                     Console.Clear();
                     currentPlayer = playerTwo;
+                    opponent = playerOne;
                     currentPlayerName = playerTwoName;
                     opponentName = playerOneName;
                     Console.WriteLine("Player 2's turn");
                     this.pickAttack();
-
-
-                    damage = rand.Next(currentPlayer.activeWeapon.attackPower);
-                    playerOne.takeDamage(damage);
-                    this.consoleWriteAttack(damage);
-
-
-
-                    if (playerOne.health > 0)
-                    {
-                        Console.WriteLine($"{currentPlayerName} has {playerOne.health} health remaining");
-                        Console.WriteLine("Press any key to continue");
-                        Console.ReadKey();
-                    }
-                    else
-                    {
-                        Console.WriteLine($"{playerOneName} has died");
-                        Console.WriteLine("Press any key to continue");
-                        Console.ReadKey();
-
-                    }
-
-                    
-
+                    this.attacks();
                 }
-                
+
 
                 if(playerOne.health <= 0)
                 {
@@ -363,7 +382,24 @@ namespace Battler
 
         public void attacks()
         {
+            int damage = rand.Next(currentPlayer.activeWeapon.attackPower);
+            opponent.takeDamage(damage);
 
+            this.consoleWriteAttack(damage);
+
+            if (opponent.health > 0)
+            {
+                Console.WriteLine($"{opponentName} has {opponent.health} health remaining");
+                Console.WriteLine("Press any key to continue");
+                Console.ReadKey();
+
+            }
+            else
+            {
+                Console.WriteLine($"{opponentName} has died");
+                Console.WriteLine("Press any key to continue");
+                Console.ReadKey();
+            }
         }
 
         public void pickAttack()
@@ -431,7 +467,7 @@ namespace Battler
                     
                     Console.Clear();
                     Console.WriteLine($"{winner} has defeated {loser} and is therefor victorious");
-                    Console.WriteLine("            __\r\n           /oo\\\r\n          |    |\r\n      ^^  (vvvv)   ^^\r\n      \\\\  /\\__/\\  //\r\n       \\\\/      \\//\r\n        /        \\        \r\n       |          |    ^  \r\n       /          \\___/ | \r\n      (            )     |\r\n       \\----------/     /\r\n         //    \\\\_____/\r\n        W       W");
+                    Console.WriteLine("            __\r\n           /oo\\\r\n          |    |\r\n      ^^  (vvvv)  ^^\r\n      \\\\  /\\__/\\  //\r\n       \\\\/      \\//\r\n        /        \\        \r\n       |          |    ^  \r\n       /          \\___/ | \r\n      (            )     |\r\n       \\----------/     /\r\n         //    \\\\_____/\r\n        W       W");
                     Console.WriteLine("Please close console");
                     Thread.Sleep(milliseconds);
                     Console.Clear();
@@ -450,6 +486,26 @@ namespace Battler
             this.victoryMessage();
         }
          
+        public void battleType()
+        {
+            Console.WriteLine("Would you like to do single or group battles?");
+        retry:
+            string battleType = Console.ReadLine();
+            bool groupBattle = false;
+            switch (battleType.ToLower())
+            {
+                case "single":
+                    break;
+                case "group":
+                    groupBattle = true;
+                    break;
+                default:
+                    Console.WriteLine("That was not an option");
+                    goto retry;
+
+            }
+            Console.Clear();
+        }
 
     }
 }
