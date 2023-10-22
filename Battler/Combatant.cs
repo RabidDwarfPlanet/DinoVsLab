@@ -11,25 +11,16 @@ namespace Battler
         public string type;
         public string name;
         public int health;
+        public int player;
         public Weapon[] weapon = new Weapon[3];
         public Weapon activeWeapon;
-        
 
-        public Combatant(string type, int health)
+
+        public Combatant(string type, int health, int player)
         {
             this.type = type;
             this.health = health;
-        }
-
-        public void displayName()
-        {
-            Console.WriteLine(name);
-        }
-
-        public void chooseWeapon(Weapon assignment, int place)
-        {
-            this.weapon[place] = assignment;
-            
+            this.player = player;
         }
 
         public void takeDamage(int damage)
@@ -37,14 +28,22 @@ namespace Battler
             this.health -= damage;
         }
 
-        public void pickWaepon()
+        public void displayType()
         {
+            Console.WriteLine(type);
+        }
+
+        public void chooseWeapon(Weapon assignment, int place)
+        {
+            this.weapon[place] = assignment;
 
         }
 
-        
 
-    
+
+
+
+
     }
 
 

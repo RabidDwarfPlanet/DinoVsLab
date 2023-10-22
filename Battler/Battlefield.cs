@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection.Emit;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using static System.Net.Mime.MediaTypeNames;
@@ -11,8 +13,8 @@ namespace Battler
 {
     internal class Battlefield
     {
-        Combatant Dinosaur = new Combatant("Dinosaur", 100);
-        Combatant Robot = new Combatant("Robot", 150);
+        Combatant displayDinosaur = new Combatant("Dinosaur", 100, 0);
+        Combatant displayRobot = new Combatant("Robot", 150, 0);
         Weapon Tail = new Weapon("Tail", 10);
         Weapon Fists = new Weapon("Fists", 10);
         Weapon Sword = new Weapon("Sword", 15);
@@ -27,8 +29,6 @@ namespace Battler
         string winnerChar = null;
         string loser = null;
         string currentPlayerChar = null;
-        string currentPlayerName = null;
-        string opponentName = null;
         Combatant currentPlayer = null;
         Combatant opponent = null;
         string playerOneChar = null;
@@ -38,7 +38,13 @@ namespace Battler
         List<Weapon> dinoWeapons = new List<Weapon>();
         List<Combatant> playerOneTeam = new List<Combatant>();
         List<Combatant> playerTwoTeam = new List<Combatant>();
+        List<Combatant> currentTeam = new List<Combatant>();
+        List<Combatant> opponentTeam = new List<Combatant>();
         bool groupBattle = false;
+        Combatant playerOne = null;
+        Combatant playerTwo = null;
+        int playerNumber = 0;
+        
 
 
         public Battlefield()
@@ -68,17 +74,659 @@ namespace Battler
 
         //}
 
+
+        public void pickCharacter(int playerNumber)
+        {
+
+            restart:
+            string playerCommand = Console.ReadLine();
+            switch (playerCommand.ToLower())
+            {
+                case "dinosaur":
+                case "dinosaurs":
+                case "dino":
+                case "dinos":
+                case "herd":
+                    if (groupBattle == false)
+                    {
+                        Combatant Dinosaur = new Combatant("Dinosaur", 50, playerNumber);
+                        
+                        if(playerNumber == 1)
+                        {
+                            playerOne = Dinosaur;
+                            playerOneChar = "dino";
+                        }
+                        if (playerNumber == 2)
+                        {
+                            playerTwo = Dinosaur;
+                            playerTwoChar = "dino";
+                        }
+                        
+                    }
+                    else
+                    {
+                        Combatant DinosaurOne = new Combatant("Dinosaur", 50, playerNumber);
+                        Combatant DinosaurTwo = new Combatant("Dinosaur", 50, playerNumber);
+                        Combatant DinosaurThree = new Combatant("Dinosaur", 50, playerNumber);
+                        if (playerNumber == 1)
+                        {
+                            playerOneTeam.Add(DinosaurOne);
+                            playerOneTeam.Add(DinosaurTwo);
+                            playerOneTeam.Add(DinosaurThree);
+                        }
+                        else if (playerNumber == 2)
+                        {
+                            playerTwoTeam.Add(DinosaurOne);
+                            playerTwoTeam.Add(DinosaurTwo);
+                            playerTwoTeam.Add(DinosaurThree);
+                        }
+                    }
+                    if (groupBattle == false)
+                    {
+                        Console.WriteLine($"\nPlayer {playerNumber} has chosen a Dinosaur");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"\nPlayer {playerNumber} has chosen Dinosaurs");
+                    }
+                    currentPlayerChar = "dinosaur";
+                    
+                    break;
+                case "robot":
+                case "robots":
+                case "fleet":
+                    if (groupBattle == false)
+                    {
+                        Combatant Robot = new Combatant("Robot", 50, playerNumber);
+
+                        if (playerNumber == 1)
+                        {
+                            playerOne = Robot;
+                            playerOneChar = "robot";
+                        }
+                        if (playerNumber == 2)
+                        {
+                            playerTwo = Robot;
+                            playerTwoChar = "robot";
+                        }
+                    }
+                    else
+                    {
+                        Combatant RobotOne = new Combatant("Robot", 50, playerNumber);
+                        Combatant RobotTwo = new Combatant("Robot", 50, playerNumber);
+                        Combatant RobotThree = new Combatant("Robot", 50, playerNumber);
+                        if (playerNumber == 1)
+                        {
+                            playerOneTeam.Add(RobotOne);
+                            playerOneTeam.Add(RobotTwo);
+                            playerOneTeam.Add(RobotThree);
+
+                        }
+                        else if (playerNumber == 2)
+                        {
+                            playerTwoTeam.Add(RobotOne);
+                            playerTwoTeam.Add(RobotTwo);
+                            playerTwoTeam.Add(RobotThree);
+
+                        }
+
+                    }
+                    if(groupBattle == false)
+                    {
+                        Console.WriteLine($"\nPlayer {playerNumber} has chosen a Robot");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"\nPlayer {playerNumber} has chosen Robots");
+                    }
+                    
+                    currentPlayerChar = "robot";
+                    break;
+                case "test":
+                    if (playerNumber == 1)
+                    {
+                        Combatant Robot = new Combatant("Robot", 5, playerNumber);
+                        playerOne = Robot;
+                        playerOneChar = "robot";
+                        currentPlayerChar = "robot";
+                    }
+                    if (playerNumber == 2)
+                    {
+                        Combatant Dinosaur = new Combatant("Dinosaur", 5, playerNumber);
+                        playerTwo = Dinosaur;
+                        playerTwoChar = "dino";
+                        currentPlayerChar = "dinosaur";
+                    }
+                        break;
+                case "characters":
+                case "character":
+                case "teams":
+                    Console.WriteLine("");
+                    if(groupBattle == false)
+                    {
+                        foreach (Combatant name in Fighters)
+                            {
+                                name.displayType();
+                            }
+                        Console.WriteLine("");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Herd \nFleet\n");
+                    }
+                    goto restart;
+                default:
+                    Console.WriteLine("That is not a valid character, please pick again");
+                    goto restart;
+
+            }
+                
+        }
+
+        public void assignName()
+        {
+            if(groupBattle == false)
+            {
+                Console.WriteLine("What would you like to name your character?");
+                currentPlayer.name = Console.ReadLine();
+            }
+            else
+            {
+                for (int i = 0; i < 3; i++)
+                {
+
+                    if (i == 0)
+                    {
+                        Console.WriteLine($"\nWhat would you like to name your first {currentPlayerChar}");
+                        currentTeam[i].name = Console.ReadLine();
+                    }
+                    else if (i == 1)
+                    {
+                        Console.WriteLine($"\nWhat would you like to name your second {currentPlayerChar}");
+                        currentTeam[i].name = Console.ReadLine();
+                    }
+                    else if (i == 2)
+                    {
+                        Console.WriteLine($"\nWhat would you like to name your third {currentPlayerChar}");
+                        currentTeam[i].name = Console.ReadLine();
+                    }
+                }
+            }
+            Console.WriteLine("Press any key to continue");
+            Console.ReadKey();
+        }
+
+
+        public void battleSetup()
+        {
+
+
+            robotWeapons.Add(Railgun);
+            robotWeapons.Add(Laser);
+            robotWeapons.Add(Sword);
+            robotWeapons.Add(Fists);
+            dinoWeapons.Add(Tail);
+            dinoWeapons.Add(Claws);
+            dinoWeapons.Add(Bite);
+            dinoWeapons.Add(Fire);
+            Fighters.Add(displayDinosaur);
+            Fighters.Add(displayRobot);
+
+
+            this.battleType();
+
+            if (groupBattle == false)
+            {
+                Console.WriteLine($"Choose player 1's combatant (Type CHARACTERS for a list of avalible characters)");
+                playerNumber = 1;
+                this.pickCharacter(playerNumber);
+                currentPlayer = playerOne;
+                this.chooseWeapons();
+                this.assignName();
+                Console.Clear();
+                Console.WriteLine($"Choose player 2's combatant (Type CHARACTERS for a list of avalible characters)");
+                playerNumber = 2;
+                this.pickCharacter(playerNumber);
+                currentPlayer = playerTwo;
+                this.chooseWeapons();
+                this.assignName();
+                this.singleUnitFight();
+                this.detectWinner();
+
+            }
+            else
+            {
+                Console.WriteLine("Choose player 1's team (Type TEAMS for a list of avalible characters)");
+                playerNumber = 1;
+                this.pickCharacter(playerNumber);
+                currentTeam = playerOneTeam;
+                this.assignName();
+                this.chooseTeamWeapons();
+                Console.Clear();
+                Console.WriteLine("Choose player 2's team (Type TEAMS for a list of avalible characters)");
+                playerNumber = 2;
+                this.pickCharacter(playerNumber);                
+                currentTeam = playerTwoTeam;
+                this.assignName();
+                this.chooseTeamWeapons();
+                this.groupFight();
+                this.detectWinner();
+
+
+
+            }
+            
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            
+            
+        }
+        public void groupFight()
+        {
+            //player 1 attacks player 2;
+            reset:
+            if(currentTeam == playerOneTeam)
+            {
+                Console.Clear();
+                Console.WriteLine("It's player 2's teams turn");
+                currentTeam = playerTwoTeam;
+                opponentTeam = playerOneTeam;
+                foreach (Combatant name in currentTeam)
+                {
+                    if (name.health > 0)
+                    {
+                        Console.WriteLine($"{name.name} is still alive with {name.health} health");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"{name.name} has died");
+                    }
+                }
+
+                Console.WriteLine("\nPress any key to continue");
+                Console.ReadKey();
+            }
+            else
+            {
+                Console.Clear();
+                Console.WriteLine("It's player 1's teams turn");
+                currentTeam = playerOneTeam;
+                opponentTeam = playerTwoTeam;
+                foreach (Combatant name in currentTeam) 
+                {
+                    if(name.health > 0)
+                    {
+                        Console.WriteLine($"{name.name} is still alive with {name.health} health");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"{name.name} has died");
+                    }
+                }
+                Console.WriteLine("\nPress any key to continue");
+                Console.ReadKey();
+            }
+            Console.WriteLine("");
+            while (currentTeam[0].health > 0 || currentTeam[1].health > 0 || currentTeam[2].health > 0)
+            {
+                for(int i = 0; i < 3; i++)
+                {
+                    bool firstTry = true;
+                    currentPlayer = currentTeam[i];
+                    retryAttack:
+                    opponent = opponentTeam[rand.Next(3)];
+                    if(opponent.health <= 0 && firstTry == true)
+                    {
+                        firstTry = false;
+                        goto retryAttack;
+                    }
+
+                    if(currentPlayer.health >= 0)
+                    {
+                        this.attacks();
+                    }
+                    else
+                    {
+                        Console.WriteLine($"{currentPlayer.name} is dead and can not attack");
+                        Console.WriteLine("Press any key to continue");
+                        Console.ReadKey();
+                    }
+                    
+                    
+                }
+                goto reset;
+            }
+
+            
+        }
+        public void singleUnitFight()
+        {
+            while (playerOne.health > 0 && playerTwo.health > 0)
+            {
+                //player 1 attacks player 2
+                Console.Clear();
+                currentPlayer = playerOne;
+                opponent = playerTwo;
+                Console.WriteLine($"{currentPlayer.name} turn");
+                this.pickAttack();
+                this.attacks();
+
+
+                //player 2 attacks player 1
+                if (playerTwo.health > 0)
+                {
+                    Console.Clear();
+                    currentPlayer = playerTwo;
+                    opponent = playerOne;
+                    Console.WriteLine($"{currentPlayer.name} turn");
+                    this.pickAttack();
+                    this.attacks();
+                }
+
+                
+            }
+        }
+        public void detectWinner()
+        {
+            if (groupBattle == false)
+            {
+                if (playerOne.health <= 0)
+                {
+                    winner = playerTwo.name;
+                    loser = playerOne.name;
+
+                    if (playerTwoChar == "robot")
+                    {
+                        winnerChar = "robot";
+                    }
+                    else if (playerTwoChar == "dino")
+                    {
+                        winnerChar = "dino";
+                    }
+                }
+                else if (playerTwo.health <= 0)
+                {
+                    winner = playerOne.name;
+                    loser = playerTwo.name;
+
+                    if (playerOneChar == "robot")
+                    {
+                        winnerChar = "robot";
+                    }
+                    else if (playerOneChar == "dino")
+                    {
+                        winnerChar = "dino";
+                    }
+                }
+            }
+            else
+            {
+                if (playerOneTeam[0].health >= 0 || playerOneTeam[1].health >= 0 || playerOneTeam[2].health >= 0)
+                {
+                    winner = "Player 1";
+                    loser = "Player 2";
+                    if (playerOneTeam[1].type == "Robot")
+                    {
+                        winnerChar = "robot";
+                    }
+                    else if (playerOneTeam[1].type == "Dinosaur")
+                    {
+                        winnerChar = "dino";
+                    }
+                }
+                else if (playerTwoTeam[0].health >= 0 || playerTwoTeam[1].health >= 0 || playerTwoTeam[2].health >= 0)
+                {
+                    winner = "Player 2";
+                    loser = "Player 1";
+                    if (playerTwoTeam[1].type == "Robot")
+                    {
+                        winnerChar = "robot";
+                    }
+                    else if (playerTwoTeam[1].type == "Dinosaur")
+                    {
+                        winnerChar = "dino";
+                    }
+                }
+            }
+
+        }
+        public void attacks()
+        {
+            int damage = rand.Next(currentPlayer.activeWeapon.attackPower);
+            opponent.takeDamage(damage);
+
+            this.consoleWriteAttack(damage);
+
+            if (opponent.health > 0)
+            {
+                Console.WriteLine($"{opponent.name} has {opponent.health} health remaining");
+                Console.WriteLine("Press any key to continue\n");
+                Console.ReadKey();
+
+            }
+            else
+            {
+                Console.WriteLine($"{opponent.name} has died");
+                Console.WriteLine("Press any key to continue\n");
+                Console.ReadKey();
+            }
+        }
+
+        public void pickAttack()
+        {
+            Console.WriteLine($"What would you like to attack with (Please enter the attack number)");
+            for (int i = 0; i < 3; i++)
+            {
+                Console.WriteLine($"Attack {i + 1}: {currentPlayer.weapon[i].type}");
+            }
+
+        retry:
+            string chosenInput = Console.ReadLine();
+            int chosenAttack = 0;
+            bool isNum = int.TryParse(chosenInput, out int attack);
+            if (isNum = true && 0 < attack && attack < 4)
+            {
+                chosenAttack = attack - 1;
+            }
+            else
+            {
+                Console.WriteLine("Not a valid attack, please try again");
+                goto retry;
+            }
+
+            currentPlayer.activeWeapon = currentPlayer.weapon[chosenAttack];
+
+
+        }
+
+        public void consoleWriteAttack(int damage)
+        {
+            switch (currentPlayer.activeWeapon.type)
+            {
+                case "Tail":
+                case "Sword":
+                case "Fists":
+                    Console.WriteLine($"{currentPlayer.name} hit {opponent.name} with their {currentPlayer.activeWeapon.type} for {damage} damage");
+                    break;
+                case "Fire breath":
+                    Console.WriteLine($"{currentPlayer.name} breathes fire at {opponent.name} for {damage} damage");
+                    break;
+                case "Bite":
+                    Console.WriteLine($"{currentPlayer.name} bites {opponent.name} for {damage} damage");
+                    break;
+                case "Claws":
+                    Console.WriteLine($"{currentPlayer.name} claws {opponent.name} for {damage} damage");
+                    break;
+                case "Laser":
+                case "Railgun":
+                    Console.WriteLine($"{currentPlayer.name} shoots {opponent.name} with a {currentPlayer.activeWeapon.type} for {damage} damage");
+                    break;
+
+            }
+        }
+
+        public void victoryMessage()
+        {
+            bool loop = true;
+
+            while (loop)
+            {
+                if (winnerChar == "robot")
+                {
+                    Console.Clear();
+                    Console.WriteLine($"{winner} has defeated {loser} and is therefor victorious");
+                    Console.WriteLine("\n      \\_/\r\n     (* *)\r\n    __)#(__\r\n( )( )...( )( )\r\n \\\\|| |_| ||//\r\n  \\() | | ()/\r\n    _(___)_\r\n   [-]   [-]");
+                    Console.WriteLine("Please close console");
+                    Thread.Sleep(milliseconds);
+                    Console.Clear();
+                    Console.WriteLine($"{winner} has defeated {loser} and is therefor victorious");
+                    Console.WriteLine("()           ()\r\n||    \\_/    ||\r\n()   (* *)   ()\r\n \\\\ __)#(__ //\r\n   ( )...( )\r\n      |_|\r\n      | |\r\n    _(___)_\r\n   [-]   [-]");
+                    Console.WriteLine("Please close console");
+                    Thread.Sleep(milliseconds);
+                }
+                else if (winnerChar == "dino")
+                {
+
+                    Console.Clear();
+                    Console.WriteLine($"{winner} has defeated {loser} and is therefor victorious");
+                    Console.WriteLine("            __\r\n           /oo\\      \r\n          |    |     \r\n      ^^  (vvvv)   ^^\r\n      \\\\  /\\__/\\  // \r\n       \\\\/      \\//  \r\n        /        \\   \r\n  ^    |          |  \r\n | \\___/          \\  \r\n|     (            ) \r\n \\     \\----------/  \r\n   \\_____//    \\\\    \r\n        W       W    ");
+                    Console.WriteLine("Please close console");
+                    Thread.Sleep(milliseconds);
+                    Console.Clear();
+                    Console.WriteLine($"{winner} has defeated {loser} and is therefor victorious");
+                    Console.WriteLine("            __            \r\n           /oo\\           \r\n          |    |          \r\n      ^^  (vvvv)   ^^     \r\n      \\\\  /\\__/\\  //      \r\n       \\\\/      \\//       \r\n        /        \\        \r\n       |          |    ^  \r\n       /          \\___/ | \r\n      (            )     |\r\n       \\----------/     / \r\n         //    \\\\_____/   \r\n        W       W         ");
+                    Console.WriteLine("Please close console");
+                    Thread.Sleep(milliseconds);
+                }
+            }
+        }
+
+        public void chooseTeamWeapons()
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                switch (i)
+                {
+                    case 0:
+                        Console.Clear();
+                        Console.WriteLine($"What weapon would you like {currentTeam[i].name} to use?(Type WEAPONS for avalible weapons)");
+                        break;
+                    case 1:
+                        Console.WriteLine($"\nWhat weapon would you like {currentTeam[i].name} to use?");
+                        break;
+                    case 2:
+                        Console.WriteLine($"\nWhat weapon would you like {currentTeam[i].name} to use?");
+                        break;
+                }
+            retry:
+                string chosenWeapon = Console.ReadLine();
+
+                if (currentTeam[i].type == "Robot")
+                {
+
+                    switch (chosenWeapon.ToLower())
+                    {
+                        case "railgun":
+                            currentTeam[i].activeWeapon = Railgun;
+                            Console.WriteLine($"{currentTeam[i].name} has equiped a Railgun");
+                            break;
+                        case "laser":
+                            Console.WriteLine($"{currentTeam[i].name} has equiped a Laser");
+                            currentTeam[i].activeWeapon = Laser;
+                            break;
+                        case "fist":
+                        case "fists":
+                            Console.WriteLine($"{currentTeam[i].name} has equiped Fists");
+                            currentTeam[i].activeWeapon = Fists;
+                            break;
+                        case "sword":
+                            Console.WriteLine($"{currentTeam[i].name} has equiped a Sword");
+                            currentTeam[i].activeWeapon = Sword;
+                            break;
+                        case "weapons":
+                            Console.WriteLine("");
+                            foreach (Weapon name in robotWeapons)
+                            {
+                                name.displayName();
+                            }
+                            Console.WriteLine("");
+                            goto retry;
+                        //case "add":
+                        //    this.addNewWeapon();
+                        //    break;
+                        default:
+                            Console.WriteLine("This is not a valid weapon, please try again");
+                            goto retry;
+                    }
+                }
+                else if (currentTeam[i].type == "Dinosaur")
+                {
+                    switch (chosenWeapon.ToLower())
+                    {
+                        case "claw":
+                        case "claws":
+                            currentTeam[i].activeWeapon = Claws;
+                            Console.WriteLine($"{currentTeam[i].name} has equiped Claws");
+                            break;
+                        case "bite":
+                            Console.WriteLine($"{currentTeam[i].name} has equiped Bite");
+                            currentTeam[i].activeWeapon = Bite;
+                            break;
+                        case "fire breath":
+                        case "firebreath":
+                        case "fire":
+                        case "breath":
+                            Console.WriteLine($"{currentTeam[i].name} has equiped Fire breath");
+                            currentTeam[i].activeWeapon = Fire;
+                            break;
+                        case "tail":
+                            Console.WriteLine($"{currentTeam[i].name} has equiped Tail");
+                            currentTeam[i].activeWeapon = Tail;
+                            break;
+                        case "weapons":
+                            Console.WriteLine("");
+                            foreach (Weapon name in dinoWeapons)
+                            {
+                                name.displayName();
+                            }
+                            Console.WriteLine();
+                            goto retry;
+                        //case "add":
+                        //    this.addNewWeapon();
+                        //    break;
+                        default:
+                            Console.WriteLine("This is not a valid weapon, please try again");
+                            goto retry;
+                    }
+                }
+
+            }
+            Console.WriteLine("Press any key to continue");
+            Console.ReadKey();
+        }
         public void chooseWeapons()
         {
-            int i = 0;
-            for (i = 0; i < 3; i++)
+            for (int i = 0; i < 3; i++)
             {
-                Console.WriteLine("\nWhat weapon would you like your fighter to use (Type WEAPONS for avalible weapons)");
+                switch (i)
+                {
+                    case 0:
+                        Console.Clear();
+                        Console.WriteLine($"Your {currentPlayerChar} may choose 3 weapons for its fight");
+                        Console.WriteLine($"What weapons would you like your {currentPlayerChar} to use (Type WEAPONS for avalible weapons)");
+                        break;
+                    case 1:
+                        Console.WriteLine("\nWhat is your second weapon");
+                        break;
+                    case 2:
+                        Console.WriteLine("\nWhat is your third weapon");
+                        break;
+                }
             retry:
                 string chosenWeapon = Console.ReadLine();
 
                 if (currentPlayerChar == "robot")
                 {
+
                     switch (chosenWeapon.ToLower())
                     {
                         case "railgun":
@@ -104,6 +752,7 @@ namespace Battler
                             {
                                 name.displayName();
                             }
+                            Console.WriteLine("");
                             goto retry;
                         //case "add":
                         //    this.addNewWeapon();
@@ -113,7 +762,7 @@ namespace Battler
                             goto retry;
                     }
                 }
-                else if (currentPlayerChar == "dino")
+                else if (currentPlayerChar == "dinosaur")
                 {
                     switch (chosenWeapon.ToLower())
                     {
@@ -127,6 +776,7 @@ namespace Battler
                             currentPlayer.chooseWeapon(Bite, i);
                             break;
                         case "fire breath":
+                        case "firebreath":
                         case "fire":
                         case "breath":
                             Console.WriteLine("You have chosen a Fire breath");
@@ -142,6 +792,7 @@ namespace Battler
                             {
                                 name.displayName();
                             }
+                            Console.WriteLine();
                             goto retry;
                         //case "add":
                         //    this.addNewWeapon();
@@ -154,329 +805,9 @@ namespace Battler
             }
         }
 
-
-        public void battleSetup()
+        public void nameCharacter()
         {
             
-
-            robotWeapons.Add(Railgun);
-            robotWeapons.Add(Laser);
-            robotWeapons.Add(Sword);
-            robotWeapons.Add(Fists);
-            dinoWeapons.Add(Tail);
-            dinoWeapons.Add(Claws);
-            dinoWeapons.Add(Bite);
-            dinoWeapons.Add(Fire);
-            Fighters.Add(Dinosaur);
-            Fighters.Add(Robot);
-
-
-            this.battleType();
-            
-
-            Console.WriteLine("Choose player 1's combatant (Type CHARACTERS for a list of avalible characters)");
-            Combatant playerOne = null;
-            string playerOneName = null;
-            Combatant playerTwo = null;
-            string playerTwoName = null;
-
-            
-
-            while (playerOne == null)
-            {
-            restart:
-                string playerCommand = Console.ReadLine();
-
-
-                switch (playerCommand.ToLower())
-                {
-                    case "dinosaur":
-                    case "dino":
-                        if (groupBattle == false)
-                        {
-                            Combatant DinosaurP1 = new Combatant("Dinosaur", 50);
-                            playerOne = DinosaurP1;
-                        }
-                        else
-                        {
-                            Combatant DinosaurP1One = new Combatant("Dinosaur", 50);
-                            Combatant DinosaurP1Two = new Combatant("Dinosaur", 50);
-                            Combatant DinosaurP1Three = new Combatant("Dinosaur", 50);
-                            playerTwoTeam.Add(DinosaurP1One); playerTwoTeam.Add(DinosaurP1Two); playerTwoTeam.Add(DinosaurP1Three);
-
-                        }
-                        currentPlayerChar = "dino";
-                        playerOneChar = "dino";
-                        Console.WriteLine("\nPlayer 1 has chosen a Dinosaur");
-                        break;
-                    case "robot":
-                        if (groupBattle == false)
-                        {
-                            Combatant RobotP1 = new Combatant("Robot", 50);
-                            playerOne = RobotP1;
-                        }
-                        else
-                        {
-                            Combatant RobotP1One = new Combatant("Dinosaur", 50);
-                            Combatant RobotP1Two = new Combatant("Dinosaur", 50);
-                            Combatant RobotP1Three = new Combatant("Dinosaur", 50);
-                            playerOneTeam.Add(RobotP1One); playerTwoTeam.Add(RobotP1Two); playerTwoTeam.Add(RobotP1Three);
-
-                        }
-                        Console.WriteLine("\nPlayer 1 has chosen a Robot");
-                        currentPlayerChar = "robot";
-                        playerTwoChar = "robot";
-                        break;
-                    case "characters":
-                        Console.WriteLine("");
-                        foreach (Combatant name in Fighters)
-                        {
-                            name.displayName();
-                        }
-
-                        break;
-                    default:
-                        Console.WriteLine("That is not a valid character, please pick again");
-                        break;
-
-
-
-                }
-                currentPlayer = playerOne;
-                this.chooseWeapons();
-                Console.WriteLine("What would you like to name your character?");
-                playerOneName = Console.ReadLine();
-            }
-
-            Console.Clear();
-            Console.WriteLine("Choose player 2's combatant (Type CHARACTERS for a list of avalible characters)");
-            while (playerTwo == null)
-            {
-                string playerCommand = Console.ReadLine();
-
-                switch (playerCommand.ToLower())
-                {
-                    case "dinosaur":
-                    case "dino":
-                        if(groupBattle == false)
-                        {
-                            Combatant DinosaurP2 = new Combatant("Dinosaur", 50);
-                            playerTwo = DinosaurP2;
-                        }
-                        else
-                        {
-                            Combatant DinosaurP2One = new Combatant("Dinosaur", 50);
-                            Combatant DinosaurP2Two = new Combatant("Dinosaur", 50);
-                            Combatant DinosaurP2Three = new Combatant("Dinosaur", 50);
-                            playerTwoTeam.Add(DinosaurP2One); playerTwoTeam.Add(DinosaurP2Two); playerTwoTeam.Add(DinosaurP2Three);
-
-                        }
-                        currentPlayerChar = "dino";
-                        playerTwoChar = "dino";
-                        Console.WriteLine("\nPlayer 2 has chosen a Dinosaur");
-                        break;
-                    case "robot":
-                        if (groupBattle == false)
-                        {
-                            Combatant RobotP2 = new Combatant("Robot", 50);
-                            playerTwo = RobotP2;
-                        }
-                        else
-                        {
-                            Combatant RobotP2One = new Combatant("Dinosaur", 50);
-                            Combatant RobotP2Two = new Combatant("Dinosaur", 50);
-                            Combatant RobotP2Three = new Combatant("Dinosaur", 50);
-                            playerTwoTeam.Add(RobotP2One); playerTwoTeam.Add(RobotP2Two); playerTwoTeam.Add(RobotP2Three);
-
-                        }
-                        Console.WriteLine("\nPlayer 2 has chosen a Robot");
-                        currentPlayerChar = "robot";
-                        playerTwoChar = "robot";
-                        break;
-                    case "characters":
-                        Console.WriteLine("");
-                        foreach (Combatant name in Fighters)
-                        {
-                            name.displayName();
-                        }
-
-                        break;
-                    default:
-                        Console.WriteLine("That is not a valid character, please pick again");
-                        break;
-
-
-
-                }
-
-            }
-            currentPlayer = playerTwo;
-            this.chooseWeapons();
-            Console.WriteLine("What would you like to name your character?");
-            playerTwoName = Console.ReadLine();
-
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            
-                currentPlayer = playerOne;
-                opponent = playerTwo;
-                currentPlayerName = playerOneName;
-                opponentName = playerTwoName;
-
-            while (playerOne.health > 0 && playerTwo.health > 0)
-            {
-                //player 1 attacks player 2
-                Console.Clear();
-                Console.WriteLine("Player 1's turn");
-                this.pickAttack();
-                this.attacks();
-
-
-                //player 2 attacks player 1
-                if (playerTwo.health > 0)
-                {
-                    Console.Clear();
-                    currentPlayer = playerTwo;
-                    opponent = playerOne;
-                    currentPlayerName = playerTwoName;
-                    opponentName = playerOneName;
-                    Console.WriteLine("Player 2's turn");
-                    this.pickAttack();
-                    this.attacks();
-                }
-
-
-                if(playerOne.health <= 0)
-                {
-                    winner = playerTwoName;
-                    loser = playerOneName;
-
-                    if(playerTwoChar == "robot")
-                    {
-                        winnerChar = "robot";
-                    }
-                    else if(playerTwoChar == "dino")
-                    {
-                        winnerChar = "dino";
-                    }
-                }
-                else if (playerTwo.health <= 0)
-                {
-                    winner = playerOneName;
-                    loser = playerTwoName;
-
-                    if (playerOneChar == "robot")
-                    {
-                        winnerChar = "robot";
-                    }
-                    else if (playerOneChar == "dino")
-                    {
-                        winnerChar = "dino";
-                    }
-
-                }
-
-            }
-
-        }
-
-
-        public void attacks()
-        {
-            int damage = rand.Next(currentPlayer.activeWeapon.attackPower);
-            opponent.takeDamage(damage);
-
-            this.consoleWriteAttack(damage);
-
-            if (opponent.health > 0)
-            {
-                Console.WriteLine($"{opponentName} has {opponent.health} health remaining");
-                Console.WriteLine("Press any key to continue");
-                Console.ReadKey();
-
-            }
-            else
-            {
-                Console.WriteLine($"{opponentName} has died");
-                Console.WriteLine("Press any key to continue");
-                Console.ReadKey();
-            }
-        }
-
-        public void pickAttack()
-        {
-            Console.WriteLine($"What would you like to attack with (Please enter the attack number)");
-            for (int i = 0; i < 3; i++)
-            {
-                Console.WriteLine($"Attack {i + 1}: {currentPlayer.weapon[i].type}");
-            }
-
-            int chosenAttack = int.Parse(Console.ReadLine());
-            chosenAttack -= 1;
-            currentPlayer.activeWeapon = currentPlayer.weapon[chosenAttack];
-
-
-        }
-
-        public void consoleWriteAttack(int damage)
-        {
-            switch (currentPlayer.activeWeapon.type)
-            {
-                case "Tail":
-                case "Sword":
-                case "Fists":
-                    Console.WriteLine($"{currentPlayerName} hit {opponentName} with their {currentPlayer.activeWeapon.type} {damage} damage");
-                    break;
-                case "Fire breath":
-                    Console.WriteLine($"{currentPlayerName} breathes fire at {opponentName} for {damage} damage");
-                    break;
-                case "Bite":
-                    Console.WriteLine($"{currentPlayerName} bites {opponentName} for {damage} damage");
-                    break;
-                case "Claws":
-                    Console.WriteLine($"{currentPlayerName} claws {opponentName} for {damage} damage");
-                    break;
-                case "Laser":
-                case "Railgun":
-                    Console.WriteLine($"{currentPlayerName} shoots {opponentName} with a {currentPlayer.activeWeapon.type} for {damage} damage" );
-                    break;
-
-            }
-        }
-        
-        public void victoryMessage()
-        {
-            bool loop = true;
-            
-            while (loop)
-            {
-                if (winnerChar == "robot")
-                {
-                    Console.Clear();
-                    Console.WriteLine($"{winner} has defeated {loser} and is therefor victorious");
-                    Console.WriteLine("\n      \\_/\r\n     (* *)\r\n    __)#(__\r\n( )( )...( )( )\r\n \\\\|| |_| ||//\r\n  \\() | | ()/\r\n    _(___)_\r\n   [-]   [-]");
-                    Console.WriteLine("Please close console");
-                    Thread.Sleep(milliseconds);
-                    Console.Clear();
-                    Console.WriteLine($"{winner} has defeated {loser} and is therefor victorious");
-                    Console.WriteLine("()           ()\r\n||    \\_/    ||\r\n()   (* *)   ()\r\n \\\\ __)#(__ //\r\n   ( )...( )\r\n      |_|\r\n      | |\r\n    _(___)_\r\n   [-]   [-]");
-                    Console.WriteLine("Please close console");
-                    Thread.Sleep(milliseconds);
-                }
-                else if (winnerChar == "dino")
-                {
-                    
-                    Console.Clear();
-                    Console.WriteLine($"{winner} has defeated {loser} and is therefor victorious");
-                    Console.WriteLine("            __\r\n           /oo\\\r\n          |    |\r\n      ^^  (vvvv)  ^^\r\n      \\\\  /\\__/\\  //\r\n       \\\\/      \\//\r\n        /        \\        \r\n       |          |    ^  \r\n       /          \\___/ | \r\n      (            )     |\r\n       \\----------/     /\r\n         //    \\\\_____/\r\n        W       W");
-                    Console.WriteLine("Please close console");
-                    Thread.Sleep(milliseconds);
-                    Console.Clear();
-                    Console.WriteLine($"{winner} has defeated {loser} and is therefor victorious");
-                    Console.WriteLine("            __\r\n           /oo\\\r\n          |    |\r\n      ^^  (vvvv)  ^^\r\n      \\\\  /\\__/\\  //\r\n       \\\\/      \\//\r\n        /        \\        \r\n  ^    |          |  \r\n | \\___/          \\ \r\n|     (            )\r\n \\     \\----------/\r\n   \\_____//    \\\\\r\n        W       W");
-                    Console.WriteLine("Please close console");
-                    Thread.Sleep(milliseconds);
-                }
-            }
         }
 
         public void runGame()
@@ -491,7 +822,7 @@ namespace Battler
             Console.WriteLine("Would you like to do single or group battles?");
         retry:
             string battleType = Console.ReadLine();
-            bool groupBattle = false;
+            groupBattle = false;
             switch (battleType.ToLower())
             {
                 case "single":
