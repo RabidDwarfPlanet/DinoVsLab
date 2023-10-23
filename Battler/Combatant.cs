@@ -14,6 +14,7 @@ namespace Battler
         public int player;
         public Weapon[] weapon = new Weapon[3];
         public Weapon activeWeapon;
+        public bool isDead = false;
 
 
         public Combatant(string type, int health, int player)

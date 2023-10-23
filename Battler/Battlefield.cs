@@ -322,7 +322,6 @@ namespace Battler
         }
         public void groupFight()
         {
-            //player 1 attacks player 2;
             reset:
             if(currentTeam == playerOneTeam)
             {
@@ -393,7 +392,15 @@ namespace Battler
                     
                     
                 }
-                goto reset;
+                if (opponentTeam[0].health <= 0 && opponentTeam[1].health <= 0 && opponentTeam[2].health <= 0)
+                {
+                    break;
+                }
+                else
+                {
+                    goto reset;
+                }
+                    
             }
 
             
@@ -506,6 +513,7 @@ namespace Battler
             else
             {
                 Console.WriteLine($"{opponent.name} has died");
+                opponent.isDead = true;
                 Console.WriteLine("Press any key to continue\n");
                 Console.ReadKey();
             }
@@ -545,58 +553,60 @@ namespace Battler
                 case "Tail":
                 case "Sword":
                 case "Fists":
-                    Console.WriteLine($"{currentPlayer.name} hit {opponent.name} with their {currentPlayer.activeWeapon.type} for {damage} damage");
+                    if(opponent.isDead == false)
+                    {
+                        Console.WriteLine($"{currentPlayer.name} hit {opponent.name} with their {currentPlayer.activeWeapon.type} for {damage} damage");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"{currentPlayer.name} hit {opponent.name}'s body");
+                    }
+                    
                     break;
                 case "Fire breath":
-                    Console.WriteLine($"{currentPlayer.name} breathes fire at {opponent.name} for {damage} damage");
+                    if (opponent.isDead == false)
+                    {
+                        Console.WriteLine($"{currentPlayer.name} breathes fire at {opponent.name} for {damage} damage");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"{currentPlayer.name} burns {opponent.name}'s body");
+                    }
                     break;
                 case "Bite":
-                    Console.WriteLine($"{currentPlayer.name} bites {opponent.name} for {damage} damage");
+                    if (opponent.isDead == false)
+                    {
+                        Console.WriteLine($"{currentPlayer.name} bites {opponent.name} for {damage} damage");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"{currentPlayer.name} bites {opponent.name}'s body");
+                    }
                     break;
                 case "Claws":
-                    Console.WriteLine($"{currentPlayer.name} claws {opponent.name} for {damage} damage");
+                    
+                    if (opponent.isDead == false)
+                    {
+                        Console.WriteLine($"{currentPlayer.name} claws {opponent.name} for {damage} damage");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"{currentPlayer.name} claws {opponent.name}'s body");
+                    }
                     break;
                 case "Laser":
                 case "Railgun":
-                    Console.WriteLine($"{currentPlayer.name} shoots {opponent.name} with a {currentPlayer.activeWeapon.type} for {damage} damage");
+                    if (opponent.isDead == false)
+                    {
+                        Console.WriteLine($"{currentPlayer.name} shoots {opponent.name} with a {currentPlayer.activeWeapon.type} for {damage} damage");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"{currentPlayer.name} shoots {opponent.name}'s body");
+                    }
+                    
                     break;
 
-            }
-        }
-
-        public void victoryMessage()
-        {
-            bool loop = true;
-
-            while (loop)
-            {
-                if (winnerChar == "robot")
-                {
-                    Console.Clear();
-                    Console.WriteLine($"{winner} has defeated {loser} and is therefor victorious");
-                    Console.WriteLine("\n      \\_/\r\n     (* *)\r\n    __)#(__\r\n( )( )...( )( )\r\n \\\\|| |_| ||//\r\n  \\() | | ()/\r\n    _(___)_\r\n   [-]   [-]");
-                    Console.WriteLine("Please close console");
-                    Thread.Sleep(milliseconds);
-                    Console.Clear();
-                    Console.WriteLine($"{winner} has defeated {loser} and is therefor victorious");
-                    Console.WriteLine("()           ()\r\n||    \\_/    ||\r\n()   (* *)   ()\r\n \\\\ __)#(__ //\r\n   ( )...( )\r\n      |_|\r\n      | |\r\n    _(___)_\r\n   [-]   [-]");
-                    Console.WriteLine("Please close console");
-                    Thread.Sleep(milliseconds);
-                }
-                else if (winnerChar == "dino")
-                {
-
-                    Console.Clear();
-                    Console.WriteLine($"{winner} has defeated {loser} and is therefor victorious");
-                    Console.WriteLine("            __\r\n           /oo\\      \r\n          |    |     \r\n      ^^  (vvvv)   ^^\r\n      \\\\  /\\__/\\  // \r\n       \\\\/      \\//  \r\n        /        \\   \r\n  ^    |          |  \r\n | \\___/          \\  \r\n|     (            ) \r\n \\     \\----------/  \r\n   \\_____//    \\\\    \r\n        W       W    ");
-                    Console.WriteLine("Please close console");
-                    Thread.Sleep(milliseconds);
-                    Console.Clear();
-                    Console.WriteLine($"{winner} has defeated {loser} and is therefor victorious");
-                    Console.WriteLine("            __            \r\n           /oo\\           \r\n          |    |          \r\n      ^^  (vvvv)   ^^     \r\n      \\\\  /\\__/\\  //      \r\n       \\\\/      \\//       \r\n        /        \\        \r\n       |          |    ^  \r\n       /          \\___/ | \r\n      (            )     |\r\n       \\----------/     / \r\n         //    \\\\_____/   \r\n        W       W         ");
-                    Console.WriteLine("Please close console");
-                    Thread.Sleep(milliseconds);
-                }
             }
         }
 
@@ -627,19 +637,19 @@ namespace Battler
                     {
                         case "railgun":
                             currentTeam[i].activeWeapon = Railgun;
-                            Console.WriteLine($"{currentTeam[i].name} has equiped a Railgun");
+                            Console.WriteLine($"{currentTeam[i].name} has equipped a Railgun");
                             break;
                         case "laser":
-                            Console.WriteLine($"{currentTeam[i].name} has equiped a Laser");
+                            Console.WriteLine($"{currentTeam[i].name} has equipped a Laser");
                             currentTeam[i].activeWeapon = Laser;
                             break;
                         case "fist":
                         case "fists":
-                            Console.WriteLine($"{currentTeam[i].name} has equiped Fists");
+                            Console.WriteLine($"{currentTeam[i].name} has equipped Fists");
                             currentTeam[i].activeWeapon = Fists;
                             break;
                         case "sword":
-                            Console.WriteLine($"{currentTeam[i].name} has equiped a Sword");
+                            Console.WriteLine($"{currentTeam[i].name} has equipped a Sword");
                             currentTeam[i].activeWeapon = Sword;
                             break;
                         case "weapons":
@@ -665,21 +675,21 @@ namespace Battler
                         case "claw":
                         case "claws":
                             currentTeam[i].activeWeapon = Claws;
-                            Console.WriteLine($"{currentTeam[i].name} has equiped Claws");
+                            Console.WriteLine($"{currentTeam[i].name} has equipped Claws");
                             break;
                         case "bite":
-                            Console.WriteLine($"{currentTeam[i].name} has equiped Bite");
+                            Console.WriteLine($"{currentTeam[i].name} has equipped Bite");
                             currentTeam[i].activeWeapon = Bite;
                             break;
                         case "fire breath":
                         case "firebreath":
                         case "fire":
                         case "breath":
-                            Console.WriteLine($"{currentTeam[i].name} has equiped Fire breath");
+                            Console.WriteLine($"{currentTeam[i].name} has equipped Fire breath");
                             currentTeam[i].activeWeapon = Fire;
                             break;
                         case "tail":
-                            Console.WriteLine($"{currentTeam[i].name} has equiped Tail");
+                            Console.WriteLine($"{currentTeam[i].name} has equipped Tail");
                             currentTeam[i].activeWeapon = Tail;
                             break;
                         case "weapons":
@@ -837,6 +847,116 @@ namespace Battler
             }
             Console.Clear();
         }
+        string winningDino1 = "            __\r\n           /oo\\      \r\n          |    |     \r\n      ^^  (vvvv)   ^^\r\n      \\\\  /\\__/\\  // \r\n       \\\\/      \\//  \r\n        /        \\   \r\n  ^    |          |  \r\n | \\___/          \\  \r\n|     (            ) \r\n \\     \\----------/  \r\n   \\_____//    \\\\    \r\n        W       W ";
+        string winningDino2 = "            __\r\n           /oo\\           \r\n          |    |          \r\n      ^^  (vvvv)   ^^     \r\n      \\\\  /\\__/\\  //      \r\n       \\\\/      \\//       \r\n        /        \\        \r\n       |          |    ^  \r\n       /          \\___/ | \r\n      (            )     |\r\n       \\----------/     / \r\n         //    \\\\_____/   \r\n        W       W         ";
+        string deadDino = "            __\r\n           /xx\\      \r\n          |    |     \r\n          (vvvv)     \r\n          /\\__/\\     \r\n        //      \\\\   \r\n      ///        \\\\\\ \r\n  ^  //|          |\\\\\r\n | \\vv_/          \\ vv \r\n|     (            ) \r\n \\     \\----------/  \r\n   \\_____//    \\\\    \r\n        W       W  ";
+        string winningRobot1 = "      \\_/\r\n     (* *)\r\n    __)#(__\r\n( )( )...( )( )\r\n \\\\|| |_| ||//\r\n  \\() | | ()/\r\n    _(___)_\r\n   [-]   [-]";
+        string winningRobot2 = "()           ()\r\n||    \\_/    ||\r\n()   (* *)   ()\r\n \\\\ __)#(__ //\r\n   ( )...( )\r\n      |_|\r\n      | |\r\n    _(___)_\r\n   [-]   [-]";
+        string deadRobot = "      \\_/\r\n     (x x)\r\n    __)#(__\r\n   ( )...( )\r\n   || |_| ||\r\n   () | | ()\r\n  //_(___)_\\\\\r\n ()[-]   [-]()";
 
+
+        public void victoryMessage()
+        {
+            bool loop = true;
+
+            while (loop)
+            {
+                if (winnerChar == "robot")
+                {
+                    Console.Clear();
+                    Console.WriteLine($"{winner} has defeated {loser} and is therefor victorious");
+                    if (groupBattle == false)
+                    {
+                        Console.WriteLine(winningRobot1);
+                    }
+                    else
+                    {
+                        foreach (Combatant winner in currentTeam)
+                        {
+                            if (winner.health > 0)
+                            {
+                                Console.WriteLine(winningRobot1);
+                            }
+                            else
+                            {
+                                Console.WriteLine(deadRobot);
+                            }
+                        }
+                    }
+                    Console.WriteLine("Please close console");
+                    Thread.Sleep(milliseconds);
+                    Console.Clear();
+                    Console.WriteLine($"{winner} has defeated {loser} and is therefor victorious");
+                    if (groupBattle == false)
+                    {
+                        Console.WriteLine(winningRobot2);
+                    }
+                    else
+                    {
+                        foreach (Combatant winner in currentTeam)
+                        {
+                            if (winner.health > 0)
+                            {
+                                Console.WriteLine(winningRobot2);
+                            }
+                            else
+                            {
+                                Console.WriteLine(deadRobot);
+                            }
+                        }
+                    }
+                    Console.WriteLine("Please close console");
+                    Thread.Sleep(milliseconds);
+                }
+                else if (winnerChar == "dino")
+                {
+
+                    Console.Clear();
+                    Console.WriteLine($"{winner} has defeated {loser} and is therefor victorious");
+                    if (groupBattle == false)
+                    {
+                        Console.WriteLine(winningDino1);
+                    }
+                    else
+                    {
+                        foreach (Combatant winner in currentTeam)
+                        {
+                            if (winner.health > 0)
+                            {
+                                Console.WriteLine(winningDino1);
+                            }
+                            else
+                            {
+                                Console.WriteLine(deadDino);
+                            }
+                        }
+                    }
+                    Console.WriteLine("Please close console");
+                    Thread.Sleep(milliseconds);
+                    Console.Clear();
+                    Console.WriteLine($"{winner} has defeated {loser} and is therefor victorious");
+                    if (groupBattle == false)
+                    {
+                        Console.WriteLine(winningDino2);
+                    }
+                    else
+                    {
+                        foreach (Combatant winner in currentTeam)
+                        {
+                            if (winner.health > 0)
+                            {
+                                Console.WriteLine(winningDino2);
+                            }
+                            else
+                            {
+                                Console.WriteLine(deadDino);
+                            }
+                        }
+                    }
+                    Console.WriteLine("Please close console");
+                    Thread.Sleep(milliseconds);
+                }
+            }
+        }
     }
 }
