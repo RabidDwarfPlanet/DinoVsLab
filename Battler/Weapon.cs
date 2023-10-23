@@ -10,17 +10,21 @@ namespace Battler
     internal class Weapon
     {
         public string type;
-        public int attackPower;
+        public int addedAttackPower;
+        public int randomAttackPower;
 
-        public Weapon(string name, int attackPower)
+        public Weapon(string name, int addedAttackPower, int randomAttackPower)
         {
             this.type = name;
-            this.attackPower = attackPower;
+            this.addedAttackPower = addedAttackPower;
+            this.randomAttackPower = randomAttackPower;
         }
 
         public void displayName()
         {
-            Console.WriteLine(type);
+            Console.WriteLine($"{type}: {addedAttackPower} + d{randomAttackPower} damage");
         }
+
+
     }
 }

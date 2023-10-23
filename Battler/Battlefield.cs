@@ -15,14 +15,14 @@ namespace Battler
     {
         Combatant displayDinosaur = new Combatant("Dinosaur", 100, 0);
         Combatant displayRobot = new Combatant("Robot", 150, 0);
-        Weapon Tail = new Weapon("Tail", 10);
-        Weapon Fists = new Weapon("Fists", 10);
-        Weapon Sword = new Weapon("Sword", 15);
-        Weapon Fire = new Weapon("Fire breath", 25);
-        Weapon Claws = new Weapon("Claws", 15);
-        Weapon Bite = new Weapon("Bite", 20);
-        Weapon Railgun = new Weapon("Railgun", 25);
-        Weapon Laser = new Weapon("Laser", 20);
+        Weapon Tail = new Weapon("Tail", 5, 5);
+        Weapon Fists = new Weapon("Fists", 5, 5);
+        Weapon Sword = new Weapon("Sword", 10, 5);
+        Weapon Fire = new Weapon("Fire breath", 25, 0);
+        Weapon Claws = new Weapon("Claws", 10, 5);
+        Weapon Bite = new Weapon("Bite", 5, 15);
+        Weapon Railgun = new Weapon("Railgun", 25, 0);
+        Weapon Laser = new Weapon("Laser", 5, 15);
         Random rand = new Random();
         int milliseconds = 1500;
         string winner = null;
@@ -498,7 +498,7 @@ namespace Battler
         }
         public void attacks()
         {
-            int damage = rand.Next(currentPlayer.activeWeapon.attackPower);
+            int damage = rand.Next(currentPlayer.activeWeapon.randomAttackPower) + currentPlayer.activeWeapon.addedAttackPower; 
             opponent.takeDamage(damage);
 
             this.consoleWriteAttack(damage);
@@ -510,10 +510,15 @@ namespace Battler
                 Console.ReadKey();
 
             }
-            else
+            else if(opponent.health <= 0 && opponent.isDead == false)
             {
                 Console.WriteLine($"{opponent.name} has died");
                 opponent.isDead = true;
+                Console.WriteLine("Press any key to continue\n");
+                Console.ReadKey();
+            }
+            else
+            {
                 Console.WriteLine("Press any key to continue\n");
                 Console.ReadKey();
             }
