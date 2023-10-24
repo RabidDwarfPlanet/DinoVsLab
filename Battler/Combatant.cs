@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Battler
 {
-    internal class Combatant
+    internal abstract class Combatant
     {
         public string type;
         public string name;
@@ -24,10 +24,8 @@ namespace Battler
             this.player = player;
         }
 
-        public void takeDamage(int damage)
-        {
-            this.health -= damage;
-        }
+        public abstract int Damage();
+        
 
         public void displayType()
         {

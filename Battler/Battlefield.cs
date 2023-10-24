@@ -13,15 +13,15 @@ namespace Battler
 {
     internal class Battlefield
     {
-        Combatant displayDinosaur = new Combatant("Dinosaur", 100, 0);
-        Combatant displayRobot = new Combatant("Robot", 150, 0);
+        Dinosaur displayDinosaur = new Dinosaur("Dinosaur", 100, 0);
+        Robot displayRobot = new Robot("Robot", 150, 0);
         Weapon Tail = new Weapon("Tail", 5, 5);
         Weapon Fists = new Weapon("Fists", 5, 5);
         Weapon Sword = new Weapon("Sword", 10, 5);
-        Weapon Fire = new Weapon("Fire breath", 25, 0);
+        Weapon Fire = new Weapon("Fire breath", 0, 25);
         Weapon Claws = new Weapon("Claws", 10, 5);
         Weapon Bite = new Weapon("Bite", 5, 15);
-        Weapon Railgun = new Weapon("Railgun", 25, 0);
+        Weapon Railgun = new Weapon("Railgun", 0, 25);
         Weapon Laser = new Weapon("Laser", 5, 15);
         Random rand = new Random();
         int milliseconds = 1500;
@@ -89,7 +89,7 @@ namespace Battler
                 case "herd":
                     if (groupBattle == false)
                     {
-                        Combatant Dinosaur = new Combatant("Dinosaur", 50, playerNumber);
+                        Dinosaur Dinosaur = new Dinosaur("Dinosaur", 50, playerNumber);
                         
                         if(playerNumber == 1)
                         {
@@ -105,20 +105,16 @@ namespace Battler
                     }
                     else
                     {
-                        Combatant DinosaurOne = new Combatant("Dinosaur", 50, playerNumber);
-                        Combatant DinosaurTwo = new Combatant("Dinosaur", 50, playerNumber);
-                        Combatant DinosaurThree = new Combatant("Dinosaur", 50, playerNumber);
+                        Herd herd = new Herd(playerNumber);
                         if (playerNumber == 1)
                         {
-                            playerOneTeam.Add(DinosaurOne);
-                            playerOneTeam.Add(DinosaurTwo);
-                            playerOneTeam.Add(DinosaurThree);
+                            playerOneTeam = herd.Team;
+
                         }
                         else if (playerNumber == 2)
                         {
-                            playerTwoTeam.Add(DinosaurOne);
-                            playerTwoTeam.Add(DinosaurTwo);
-                            playerTwoTeam.Add(DinosaurThree);
+                            playerTwoTeam = herd.Team;
+
                         }
                     }
                     if (groupBattle == false)
@@ -137,7 +133,7 @@ namespace Battler
                 case "fleet":
                     if (groupBattle == false)
                     {
-                        Combatant Robot = new Combatant("Robot", 50, playerNumber);
+                        Robot Robot = new Robot("Robot", 50, playerNumber);
 
                         if (playerNumber == 1)
                         {
@@ -152,21 +148,15 @@ namespace Battler
                     }
                     else
                     {
-                        Combatant RobotOne = new Combatant("Robot", 50, playerNumber);
-                        Combatant RobotTwo = new Combatant("Robot", 50, playerNumber);
-                        Combatant RobotThree = new Combatant("Robot", 50, playerNumber);
+                        Fleet fleet = new Fleet(playerNumber);
                         if (playerNumber == 1)
                         {
-                            playerOneTeam.Add(RobotOne);
-                            playerOneTeam.Add(RobotTwo);
-                            playerOneTeam.Add(RobotThree);
+                            playerOneTeam = fleet.Team;
 
                         }
                         else if (playerNumber == 2)
                         {
-                            playerTwoTeam.Add(RobotOne);
-                            playerTwoTeam.Add(RobotTwo);
-                            playerTwoTeam.Add(RobotThree);
+                            playerTwoTeam = fleet.Team;
 
                         }
 
@@ -185,14 +175,14 @@ namespace Battler
                 case "test":
                     if (playerNumber == 1)
                     {
-                        Combatant Robot = new Combatant("Robot", 5, playerNumber);
+                        Combatant Robot = new Robot("Robot", 5, playerNumber);
                         playerOne = Robot;
                         playerOneChar = "robot";
                         currentPlayerChar = "robot";
                     }
                     if (playerNumber == 2)
                     {
-                        Combatant Dinosaur = new Combatant("Dinosaur", 5, playerNumber);
+                        Combatant Dinosaur = new Dinosaur("Dinosaur", 5, playerNumber);
                         playerTwo = Dinosaur;
                         playerTwoChar = "dino";
                         currentPlayerChar = "dinosaur";
@@ -498,9 +488,8 @@ namespace Battler
         }
         public void attacks()
         {
-            int damage = rand.Next(currentPlayer.activeWeapon.randomAttackPower) + currentPlayer.activeWeapon.addedAttackPower; 
-            opponent.takeDamage(damage);
-
+            int damage = currentPlayer.Damage();
+            opponent.health -= damage;
             this.consoleWriteAttack(damage);
 
             if (opponent.health > 0)
@@ -536,7 +525,7 @@ namespace Battler
             string chosenInput = Console.ReadLine();
             int chosenAttack = 0;
             bool isNum = int.TryParse(chosenInput, out int attack);
-            if (isNum = true && 0 < attack && attack < 4)
+            if (isNum == true && 0 < attack && attack < 4)
             {
                 chosenAttack = attack - 1;
             }
